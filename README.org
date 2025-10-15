@@ -44,4 +44,4 @@ main Compose file.  The syntax to do this is:
 
 Optionally, add an =env_file= key to the YAML specifying the PP-CTI =.env= file.
 If not specified, Docker will use your project's environment - make sure to add
-the PP-CTI environment variables if this is the case.
+any necessary PP-CTI environment variables if this is the case.
