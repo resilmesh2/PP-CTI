@@ -24,11 +24,11 @@ MISP instance's URL (=services.misp.url=) and API key (=services.misp.key=).
 ** Launching PP-CTI
 
 #+begin_src sh
-  docker compose --env-file .env up --build -d
+  docker compose up --build -d
 #+end_src
 
 #+begin_src sh
-  docker compose --env-file .env down --remove-orphans
+  docker compose down --remove-orphans
 #+end_src
 
 ** Launching from another project
