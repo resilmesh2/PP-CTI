@@ -6,4 +6,4 @@ services:
     expose:
       - 8000
     networks:
-      resilmesh:
+      - resilmesh_network

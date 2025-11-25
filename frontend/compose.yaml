@@ -16,4 +16,4 @@ services:
     ports:
       - 3100:3000
     networks:
-      resilmesh:
+      - resilmesh_network

@@ -7,8 +7,3 @@ include:
     project_directory: flaskdp
   - path: frontend/compose.yaml
     project_directory: frontend
-
-networks:
-  resilmesh:
-    external: true
-    name: resilmesh_network

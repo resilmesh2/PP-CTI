@@ -20,8 +20,7 @@ services:
       PYTHONPATH: ./src
     command: --extra-pipelines /pipelines --extra-pgp-keys /pgp_keys
     networks:
-      internal:
-      resilmesh:
+      - resilmesh_network
 
   context:
     image: mysql:8
@@ -33,7 +32,7 @@ services:
     volumes:
       - v_context:/var/lib/mysql
     networks:
-      internal:
+      - resilmesh_network
 
   valkey:
     image: valkey/valkey:7.2.5-alpine
@@ -44,11 +43,8 @@ services:
       - v_valkey:/data
     command: --save 60 1 --loglevel warning
     networks:
-      internal:
+      - resilmesh_network
 
 volumes:
   v_context:
   v_valkey:
-
-networks:
-  internal:
