@@ -36,17 +36,5 @@ services:
     networks:
       - resilmesh_network
 
-  valkey:
-    image: valkey/valkey:7.2.5-alpine
-    container_name: PP-CTI-Anonymizer-Valkey
-    expose:
-      - 6379
-    volumes:
-      - v_valkey:/data
-    command: --save 60 1 --loglevel warning
-    networks:
-      - resilmesh_network
-
 volumes:
   v_context:
-  v_valkey:

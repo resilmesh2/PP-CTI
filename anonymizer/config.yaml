@@ -3,7 +3,7 @@ pipeline:
 auth:
   provider: NONE
 valkey:
-  dsn: redis://valkey:6379/0
+  dsn: redis://redis:6379/4
   ssl: False
 context:
   mysql:
