@@ -17,7 +17,6 @@ services:
       - arxlet
       - flaskdp
       - context
-      - valkey
     environment:
       PYTHONPATH: ./src
     command: --extra-pipelines /pipelines --extra-pgp-keys /pgp_keys
