@@ -1,6 +1,6 @@
 services:
   arxlet:
-    image: arxlet:latest
+    image: arxlet
     container_name: PP-CTI-ARXlet
     expose:
       - 8080
