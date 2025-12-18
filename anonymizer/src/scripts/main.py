@@ -39,7 +39,7 @@ def local():
                         default='127.0.0.1',
                         help='Host address')
     parser.add_argument('--port',
-                        default='8080',
+                        default='8070',
                         help='Port to serve on')
     parser.add_argument('--fast',
                         action='store_true',

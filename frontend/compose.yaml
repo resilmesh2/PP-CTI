@@ -4,7 +4,7 @@ services:
     build:
       context: .
       args:
-        REACT_APP_PRIVSERV_URL: http://anonymizer:8080/api/anonymizer
+        REACT_APP_PRIVSERV_URL: http://anonymizer:8070/api/anonymizer
     volumes:
       - .:/app
       - /app/node_modules

@@ -1,7 +1,7 @@
 FROM python:3.13-alpine
 LABEL org.opencontainers.image.authors="Ekam Puri Nieto <ekam.purin@um.es>"
 
-EXPOSE 8080
+EXPOSE 8070
 WORKDIR /usr
 
 
