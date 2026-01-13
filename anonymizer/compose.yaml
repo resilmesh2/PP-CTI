@@ -4,7 +4,8 @@ services:
       context: .
       args:
         project_name: anonymizer
-    container_name: PP-CTI-Anonymizer
+    container_name: resilmesh_tap_ppcti_anonymizer
+    hostname: resilmesh_tap_ppcti_anonymizer
     expose:
       - 8070
     ports:
@@ -25,7 +26,8 @@ services:
 
   context:
     image: mysql:8
-    container_name: PP-CTI-Anonymizer-Context
+    container_name: resilmesh_tap_ppcti_context
+    hostname: resilmesh_tap_ppcti_context
     expose:
       - 3306
     environment:

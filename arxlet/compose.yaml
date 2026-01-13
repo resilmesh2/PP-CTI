@@ -1,7 +1,8 @@
 services:
   arxlet:
     image: arxlet:1.0
-    container_name: PP-CTI-ARXlet
+    container_name: resilmesh_tap_ppcti_arxlet
+    hostname: resilmesh_tap_ppcti_arxlet
     expose:
       - 8080
       - 8000

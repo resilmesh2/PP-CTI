@@ -1,6 +1,7 @@
 services:
   frontend:
-    container_name: PP-CTI-Frontend
+    container_name: resilmesh_tap_ppcti_frontend
+    hostname: resilmesh_tap_ppcti_frontend
     build:
       context: .
       args:
