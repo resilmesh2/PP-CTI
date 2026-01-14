@@ -15,6 +15,10 @@ COPY yarn.lock ./
 RUN yarn cache clean --force
 
 RUN yarn add react-json-view --save
+
+# increase network timeout to avoid fetch errors
+RUN yarn config set network-timeout 600000
+
 # install dependencies using yarn
 RUN yarn install --frozen-lockfile
 
@@ -38,6 +42,6 @@ ENV REACT_APP_PRIVSERV_URL=${REACT_APP_PRIVSERV_URL}
 CMD ["yarn", "start"]
 
 #en ocasiones usar la flag --trace-deprecation puede solucionar indirectamente problemas de compilacion
-#en caso de ser necesario, descomentar esta línea y comentar la anterior.
+#en caso de ser necesario, descomentar esta lï¿½nea y comentar la anterior.
 #CMD ["yarn", "start", "--trace-deprecation"]
 
