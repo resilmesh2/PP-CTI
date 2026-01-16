@@ -14,10 +14,12 @@ COPY yarn.lock ./
 # clear yarn cache to avoid potential corruption
 RUN yarn cache clean --force
 
-RUN yarn add react-json-view --save
-
 # increase network timeout to avoid fetch errors
 RUN yarn config set network-timeout 600000
+
+RUN yarn add react-json-view --save
+
+
 
 # install dependencies using yarn
 RUN yarn install --frozen-lockfile

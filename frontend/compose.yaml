@@ -1,7 +1,7 @@
 services:
   frontend:
-    container_name: resilmesh_tap_ppcti_frontend
-    hostname: resilmesh_tap_ppcti_frontend
+    container_name: resilmesh-tap-ppcti-frontend
+    hostname: resilmesh-tap-ppcti-frontend
     build:
       context: .
       args:

@@ -2,8 +2,8 @@ services:
   flaskdp:
     build:
       context: .
-    container_name: resilmesh_tap_ppcti_flaskdp
-    hostname: resilmesh_tap_ppcti_flaskdp
+    container_name: resilmesh-tap-ppcti-flaskdp
+    hostname: resilmesh-tap-ppcti-flaskdp
     expose:
       - 8000
     networks:
