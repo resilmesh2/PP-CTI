@@ -148,7 +148,7 @@ class AuthSettings(BaseSettingsField):
 
 
 class ValkeySettings(BaseSettingsField):
-    dsn: RedisDsn = RedisDsn('redis://valkey:6379/0')
+    dsn: RedisDsn = RedisDsn('redis://valkey:6379/4')
     ssl: bool = True
     connection: ConnectionSettings = ConnectionSettings()
 
