@@ -931,7 +931,7 @@ function App() {
   };
 
   const errorfile = () => {
-    console.log("error en lectura");
+    console.log("error reading file");
   };
 
   //pretty print
@@ -950,7 +950,7 @@ function App() {
           const json = JSON.parse(e.target.result);
           setJsonContent(json);
         } catch (error) {
-          alert("Error al leer el archivo JSON: " + error.message);
+          alert("Error reading JSON file: " + error.message);
         }
       };
 

@@ -5,7 +5,7 @@
  * See LICENSE file in the project root for details.
  */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 function PrivacyPolicy({
     onFileChosen,
@@ -48,12 +48,53 @@ function PrivacyPolicy({
     addObject,
     removeObject }) {
 
+    const [toastMsg, setToastMsg] = useState("");
+    const [toastVisible, setToastVisible] = useState(false);
+
+    useEffect(() => {
+        if (toastVisible) {
+            const timer = setTimeout(() => {
+                setToastVisible(false);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [toastVisible]);
+
+    const showToast = (message) => {
+        setToastMsg(message);
+        setToastVisible(true);
+    };
+
+    const schemeLabels = {
+        "pgp": "PGP",
+        "generalization": "Generalization",
+        "suppression": "Suppression",
+        "quasi": "Quasi k-Anonymity",
+        "laplace": "Laplace",
+        "laplace truncated": "Laplace Truncated",
+        "laplace bounded domain": "Laplace Bounded Domain",
+        "laplace bounded noise": "Laplace Bounded Noise",
+        "gaussian": "Gaussian",
+        "gaussian analytics": "Gaussian Analytic",
+        "uniform": "Uniform"
+    };
+
     return (
         <section
             tabIndex={0}
             className="section d-flex flex-column p-3"
             style={{ gap: "3rem" }}
         >
+            {/* Toast Notification */}
+            {toastVisible && (
+                <div 
+                    className="alert alert-warning position-fixed top-0 start-50 translate-middle-x mt-4 shadow-sm" 
+                    style={{ zIndex: 1055, minWidth: "320px", textAlign: "center", borderRadius: "8px" }}
+                    role="alert"
+                >
+                    ⚠️ {toastMsg}
+                </div>
+            )}
 
             {/* Contenedor centrado con el label y el input*/}
             <div className="d-flex justify-content-center">
@@ -158,7 +199,7 @@ function PrivacyPolicy({
                                     </option>
                                     {att_schemes.map((s, i) => (
                                         <option key={i} value={s}>
-                                            {s}
+                                            {schemeLabels[s] || s}
                                         </option>
                                     ))}
                                 </select>
@@ -361,7 +402,7 @@ function PrivacyPolicy({
                                 {/* Botones */}
                                 <button
                                     type="button"
-                                    className="btn btn-primary btn-sm ms-2"
+                                    className="btn btn-danger btn-sm ms-2"
                                     onClick={() => removeAttribute(index)}
                                 >
                                     Delete attribute
@@ -377,10 +418,25 @@ function PrivacyPolicy({
                         </div>
                     ))}
                     {flagobj && templates.map((template, index) => (
-                        <div className="mb-3" key={index}>
+                        <div className="mb-3 position-relative border border-2 rounded p-3 mb-4" key={index} style={{ borderColor: '#dee2e6' }}>
+                            <button
+                                className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                                type="button"
+                                onClick={() => {
+                                    if (templates.length <= 1) {
+                                        showToast("A privacy policy must have at least one object.");
+                                    } else {
+                                        removeObject(index);
+                                    }
+                                }}
+                            >
+                                Delete object
+                            </button>
                             {/* Selector de objeto */}
                             <div className="mt-4 d-inline-block">
-                                <h5 className="d-block">Nombre del objeto</h5>
+                                <h5 className="d-block">
+                                    Current Selected Object: <span className="text-muted fw-normal">{templates[index].name}</span>
+                                </h5>
                                 <select
                                     className="ms-2"
                                     name="name"
@@ -398,38 +454,63 @@ function PrivacyPolicy({
                                 </select>
 
                                 {/* Checkbox para aplicar DP */}
-                                <label className="ms-2">
-                                    Apply differential privacy:{" "}
-                                    <input
-                                        type="checkbox"
-                                        className="ms-2"
-                                        checked={templates[index].dp}
-                                        onChange={(e) => changedp(e, index)}
-                                    />
-                                </label>
+                                {templates[index].name && (
+                                    <label className="ms-2">
+                                        Apply differential privacy:{" "}
+                                        <input
+                                            type="checkbox"
+                                            className="ms-2"
+                                            checked={templates[index].dp}
+                                            onChange={(e) => changedp(e, index)}
+                                        />
+                                    </label>
+                                )}
                             </div>
 
                             {/* Configuración DP si está activado */}
                             {templates[index].dp && (
-                                <div className="mt-2 ms-2 me-2 mb-2">
-                                    {/* Selección de atributos */}
+                                <div className="mt-3 ms-2 me-2 mb-3 p-3 border rounded border-primary">
+                                    <h6 className="mb-3 text-secondary">
+                                        Applying differential privacy to <b className="text-danger">{templates[index].name}</b>
+                                    </h6>
+                                    
+                                    <h6 className="text-center mb-2" style={{ fontSize: '0.95rem' }}>Attributes to apply Differential Privacy:</h6>
+                                    {/* Selección de atributos - Modified to Checkboxes */}
                                     <div className="d-flex justify-content-center">
-                                        <select
-                                            className="form-select form-select-sm"
-                                            style={{ width: "250px" }}
-                                            name="attributes"
-                                            value={templates[index]["dp-policy"]["attribute-names"]}
-                                            onChange={(e) => changeAttAgroupation(e, index)}
-                                            multiple
+                                        <div
+                                            className="border rounded p-2 text-start"
+                                            style={{ width: "250px", maxHeight: "150px", overflowY: "auto", backgroundColor: "#fff" }}
                                         >
                                             {object_list
                                                 .find((el) => el.name === templates[index].name)
                                                 ?.attributes.map((a, i) => (
-                                                    <option key={i} value={a}>
-                                                        {a}
-                                                    </option>
+                                                    <div className="form-check" key={i}>
+                                                        <input
+                                                            className="form-check-input"
+                                                            type="checkbox"
+                                                            id={`chk-${index}-${i}`}
+                                                            checked={templates[index]["dp-policy"]["attribute-names"].includes(a)}
+                                                            disabled={templates[index].attributes.some((att) => att.name === a)}
+                                                            onChange={(e) => {
+                                                                const isChecked = e.target.checked;
+                                                                const currentList = templates[index]["dp-policy"]["attribute-names"].filter(x => x !== "");
+                                                                let newList;
+                                                                if (isChecked) {
+                                                                    newList = [...currentList, a];
+                                                                } else {
+                                                                    newList = currentList.filter(item => item !== a);
+                                                                }
+                                                                // Create synthetic event for changeAttAgroupation in App.js
+                                                                const syntheticOptions = newList.map(val => ({ selected: true, value: val }));
+                                                                changeAttAgroupation({ target: { options: syntheticOptions } }, index);
+                                                            }}
+                                                        />
+                                                        <label className="form-check-label" htmlFor={`chk-${index}-${i}`}>
+                                                            {a}
+                                                        </label>
+                                                    </div>
                                                 ))}
-                                        </select>
+                                        </div>
                                     </div>
 
                                     {/* Mecanismo de DP */}
@@ -442,11 +523,11 @@ function PrivacyPolicy({
                                             onChange={(event) => changeAttAgroupationScheme(event, index)}
                                         >
                                             <option hidden value="None">
-                                                mecanismo
+                                                Mechanism
                                             </option>
                                             {dp_schemes.map((s, i) => (
                                                 <option key={i} value={s}>
-                                                    {s}
+                                                    {schemeLabels[s] || s}
                                                 </option>
                                             ))}
                                         </select>
@@ -455,6 +536,7 @@ function PrivacyPolicy({
                                     {/* Inputs para metadata DP */}
                                     {templates[index]["dp-policy"].scheme !== "uniform" && (
                                         <div className="ms-2 mt-2 mb-2">
+                                            <h6 className="mb-2 ms-2" style={{ fontSize: '0.95rem' }}>Differential Privacy Parameters:</h6>
                                             <label className="ms-2">
                                                 Epsilon:
                                                 <input
@@ -513,6 +595,7 @@ function PrivacyPolicy({
 
                                     {templates[index]["dp-policy"].scheme === "uniform" && (
                                         <div className="ms-2 mt-2 mb-2">
+                                            <h6 className="mb-2 ms-2" style={{ fontSize: '0.95rem' }}>Differential Privacy Parameters:</h6>
                                             <label className="ms-2">
                                                 Delta:
                                                 <input
@@ -569,7 +652,7 @@ function PrivacyPolicy({
                                         />
                                     </label>
                                     <label className="ms-2">
-                                        Apply k-map:{" "}
+                                        k-Map:{" "}
                                         <input
                                             type="checkbox"
                                             className="ms-2"
@@ -581,7 +664,8 @@ function PrivacyPolicy({
                             )}
 
                             {/* Atributos dinámicos */}
-                            {template.attributes.map((attribute, i_a) => (
+                            {templates[index].name && <h5 className="mt-4 mb-2">Attribute List:</h5>}
+                            {templates[index].name && template.attributes.map((attribute, i_a) => (
                                 <div className="mt-3" key={i_a}>
                                     <select
                                         className="ms-2"
@@ -596,7 +680,11 @@ function PrivacyPolicy({
                                         </option>
                                         {object_list.find((el) => el.name === templates[index].name)
                                             ?.attributes.map((a, i) => (
-                                                <option key={i} value={a}>
+                                                <option 
+                                                    key={i} 
+                                                    value={a}
+                                                    disabled={templates[index].dp && templates[index]["dp-policy"]["attribute-names"].includes(a)}
+                                                >
                                                     {a}
                                                 </option>
                                             ))}
@@ -615,7 +703,7 @@ function PrivacyPolicy({
                                         </option>
                                         {schemes.map((scheme, i) => (
                                             <option key={i} value={scheme}>
-                                                {scheme}
+                                                {schemeLabels[scheme] || scheme}
                                             </option>
                                         ))}
                                     </select>
@@ -715,9 +803,15 @@ function PrivacyPolicy({
 
                                     {/* Botón eliminar atributo */}
                                     <button
-                                        className="btn btn-primary btn-sm ms-2"
+                                        className="btn btn-danger btn-sm ms-2"
                                         type="button"
-                                        onClick={() => removeObjectAttribute(index, i_a)}
+                                        onClick={() => {
+                                            if (templates[index].attributes.length <= 1) {
+                                                showToast("An object must have at least one attribute.");
+                                            } else {
+                                                removeObjectAttribute(index, i_a);
+                                            }
+                                        }}
                                     >
                                         Delete attribute
                                     </button>
@@ -725,35 +819,32 @@ function PrivacyPolicy({
                             ))}
 
                             {/* Botones globales */}
-                            <button
-                                className="btn btn-primary btn-sm ms-2 mt-2"
-                                type="button"
-                                onClick={() => addObjectAttribute(index)}
-                            >
-                                Add attribute
-                            </button>
-                            <button
-                                className="btn btn-secondary btn-sm ms-2 mt-2"
-                                type="button"
-                                onClick={addObject}
-                            >
-                                Add object
-                            </button>
-                            <button
-                                className="btn btn-danger btn-sm ms-2 mt-2"
-                                type="button"
-                                onClick={() => removeObject(index)}
-                            >
-                                Delete object
-                            </button>
+                            {templates[index].name && (
+                                <button
+                                    className="btn btn-primary btn-sm ms-2 mt-2"
+                                    type="button"
+                                    onClick={() => addObjectAttribute(index)}
+                                >
+                                    Add attribute
+                                </button>
+                            )}
                         </div>
                     ))}
+                    
+                    {flagobj && (
+                        <button
+                            className="btn btn-secondary btn-sm ms-2 mt-2"
+                            type="button"
+                            onClick={addObject}
+                        >
+                            Add object
+                        </button>
+                    )}
 
+                    <button type="submit" className="btn btn-primary btn-sm ms-1 mt-2 btn-privacy">
+                        Generate privacy policy
+                    </button>
                 </form>
-
-                <button type="submit" className="btn btn-primary btn-sm ms-1 mt-2 btn-privacy">
-                    Generate privacy policy
-                </button>
             </div>
 
         </section>
