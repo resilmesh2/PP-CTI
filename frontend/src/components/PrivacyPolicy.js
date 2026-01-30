@@ -69,7 +69,7 @@ function PrivacyPolicy({
         "pgp": "PGP",
         "generalization": "Generalization",
         "suppression": "Suppression",
-        "quasi": "Quasi k-Anonymity",
+        "quasi": "k-anonymity",
         "laplace": "Laplace",
         "laplace truncated": "Laplace Truncated",
         "laplace bounded domain": "Laplace Bounded Domain",
@@ -435,7 +435,7 @@ function PrivacyPolicy({
                             {/* Selector de objeto */}
                             <div className="mt-4 d-inline-block">
                                 <h5 className="d-block">
-                                    Current Selected Object: <span className="text-muted fw-normal">{templates[index].name}</span>
+                                    Selected Object: <span className="text-muted fw-normal">{templates[index].name}</span>
                                 </h5>
                                 <select
                                     className="ms-2"

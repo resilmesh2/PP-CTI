@@ -111,6 +111,15 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
     if (type === "regex") {
       let firstLevel = att.hierarchies[0] || [""];
       att.hierarchies = [firstLevel];
+    } else if (type === "interval") {
+      att.hierarchies = att.hierarchies.map((h) => {
+        if (h.length < 3) {
+            let newH = [...h];
+            while(newH.length < 3) newH.push("");
+            return newH;
+        }
+        return h;
+      });
     }
     setHattributes(atbs);
   };
@@ -124,14 +133,20 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
 
   const handleAddAttributeHierarchyElement = (index, index_h) => {
     let atbs = [...hattributes];
-    atbs[index].hierarchies[index_h].push("");
+    if (atbs[index].type === 'interval') {
+      let len = atbs[index].hierarchies[index_h].length;
+      atbs[index].hierarchies[index_h].splice(len - 1, 0, "");
+    } else {
+      atbs[index].hierarchies[index_h].push("");
+    }
     setHattributes(atbs);
   };
 
   const handleRemoveAttributeHierarchyElement = (index, index_h, index_e) => {
     let atbs = [...hattributes];
-    if (atbs[index].hierarchies[index_h].length <= 1) {
-      showToast("Minimum 1 element per hierarchy level required.");
+    let minLen = atbs[index].type === 'interval' ? 3 : 1;
+    if (atbs[index].hierarchies[index_h].length <= minLen) {
+      showToast(`Minimum ${minLen} element${minLen > 1 ? 's' : ''} per hierarchy level required.`);
       return;
     }
     atbs[index].hierarchies[index_h].splice(index_e, 1);
@@ -140,7 +155,8 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
 
   const handleAddAttributeHierarchy = (index, index_h) => {
     let atbs = [...hattributes];
-    atbs[index].hierarchies.splice(index_h + 1, 0, [""]);
+    let newLevel = atbs[index].type === 'interval' ? ["", "", ""] : [""];
+    atbs[index].hierarchies.splice(index_h + 1, 0, newLevel);
     setHattributes(atbs);
   };
 
@@ -215,6 +231,15 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
     if (type === "regex") {
       let firstLevel = att.hierarchies[0] || [""];
       att.hierarchies = [ firstLevel ];
+    } else if (type === 'interval') {
+      att.hierarchies = att.hierarchies.map((h) => {
+        if (h.length < 3) {
+            let newH = [...h];
+            while(newH.length < 3) newH.push("");
+            return newH;
+        }
+        return h;
+      });
     }
     setHobjects(objs);
   };
@@ -234,23 +259,34 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
 
   const handleAddObjectAttributeHierarchyElement = (index_o, index_a, index_h) => {
     let objs = [...hobjects];
-    objs[index_o].attributes[index_a].hierarchies[index_h].push("");
+    let att = objs[index_o].attributes[index_a];
+    if (att.type === 'interval') {
+      let len = att.hierarchies[index_h].length;
+      att.hierarchies[index_h].splice(len - 1, 0, "");
+    } else {
+      att.hierarchies[index_h].push("");
+    }
     setHobjects(objs);
   }
 
   const handleRemoveObjectAttributeHierarchyElement = (index_o, index_a, index_h, index_e) => {
     let objs = [...hobjects];
-    if (objs[index_o].attributes[index_a].hierarchies[index_h].length <= 1) {
-      showToast("Minimum 1 element per hierarchy level required.");
+    let att = objs[index_o].attributes[index_a];
+    let minLen = att.type === 'interval' ? 3 : 1;
+
+    if (att.hierarchies[index_h].length <= minLen) {
+      showToast(`Minimum ${minLen} element${minLen > 1 ? 's' : ''} per hierarchy level required.`);
       return;
     } 
-    objs[index_o].attributes[index_a].hierarchies[index_h].splice(index_e, 1);
+    att.hierarchies[index_h].splice(index_e, 1);
     setHobjects(objs);
   }
 
   const handleAddObjectAttributeHierarchy = (index_o, index_a, index_h) => {
     let objs = [...hobjects];
-    objs[index_o].attributes[index_a].hierarchies.splice(index_h + 1, 0, [""]);
+    let att = objs[index_o].attributes[index_a];
+    let newLevel = att.type === 'interval' ? ["", "", ""] : [""];
+    att.hierarchies.splice(index_h + 1, 0, newLevel);
     setHobjects(objs);
   };
 
@@ -401,10 +437,14 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
             case "interval":
               let interval_hierarchies = [];
               for (let h of atth.hierarchies) {
-                //interval_hierarchies.push({"interval": h})
+                let formatted_h = h.map((el, i) => {
+                   if(i === 0 && !el.startsWith('<=')) return '<= ' + el;
+                   if(i === h.length - 1 && !el.startsWith('>')) return '> ' + el;
+                   return el;
+                });
                 interval_hierarchies.push({
                   generalization: [],
-                  interval: h,
+                  interval: formatted_h,
                   regex: [],
                 });
               }
@@ -473,10 +513,14 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
               case "interval":
                 let interval_hierarchies = [];
                 for (let h of attribute.hierarchies) {
-                  //interval_hierarchies.push({"interval": h})
+                  let formatted_h = h.map((el, i) => {
+                     if(i === 0 && !el.startsWith('<=')) return '<= ' + el;
+                     if(i === h.length - 1 && !el.startsWith('>')) return '> ' + el;
+                     return el;
+                  });
                   interval_hierarchies.push({
                     generalization: [],
-                    interval: h,
+                    interval: formatted_h,
                     regex: [],
                   });
                 }
@@ -647,6 +691,19 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
                           <label className="fw-bold mb-2">Level {index_h + 1}</label>
                           {hierarchyLevel.map((element, index_e) => (
                             <div key={index_e} className="row mb-2">
+                              
+                              {/* Visual Aid for Interval */}
+                              {attribute.type === 'interval' && (
+                                <div className="col-auto d-flex align-items-center justify-content-center" style={{ width: '40px' }}>
+                                  {index_e === 0 && (
+                                    <span className="text-danger fw-bold" title="Less or Equal">&le;</span> // Using <= entity
+                                  )}
+                                  {index_e === hierarchyLevel.length - 1 && (
+                                    <span className="text-danger fw-bold" title="Greater Than">&gt;</span>
+                                  )}
+                                </div>
+                              )}
+                              
                               <div className="col">
                                 <div className="input-group input-group-sm">
                                   <input
@@ -744,7 +801,7 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
                       </button>
 
                       <h5 className="d-block mt-4">
-                        Current Selected Object: <span className="text-muted fw-normal">{hobjects[index].name}</span>
+                        Selected Object: <span className="text-muted fw-normal">{hobjects[index].name}</span>
                       </h5>
                       <select
                         name="name"
@@ -767,7 +824,7 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
                           className="mb-3 p-3 border border-secondary rounded"
                         >
                           <div className="d-flex justify-content-between align-items-center mb-2">
-                            <h6 className="m-0">Attribute to apply hierarchies: <span className="text-muted fw-normal">{attribute.name}</span></h6>
+                            <h6 className="m-0">Selected attribute: <span className="text-muted fw-normal">{attribute.name}</span></h6>
                             <button
                               className="btn btn-danger btn-sm"
                               type="button"
@@ -810,7 +867,6 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
                             </select>
                           )}
 
-
                           {attribute.name && attribute.hierarchies.map((h, index_h) => (
                             <div key={index_h} className="mb-3 border-bottom pb-3">
                               <div className="d-flex align-items-center mb-2">
@@ -822,6 +878,19 @@ const Hierarchy = forwardRef(({ onGenerateHierarchy }, ref) => {
                               <div className="ms-3 mb-2">
                                 {h.map((element, index_e) => (
                                   <div key={index_e} className="row mb-2">
+                                    
+                                      {/* Visual Aid for Interval */}
+                                      {attribute.type === 'interval' && (
+                                        <div className="col-auto d-flex align-items-center justify-content-center" style={{ width: '40px' }}>
+                                          {index_e === 0 && (
+                                            <span className="text-danger fw-bold" title="Less or Equal">&le;</span>
+                                          )}
+                                          {index_e === h.length - 1 && (
+                                            <span className="text-danger fw-bold" title="Greater Than">&gt;</span>
+                                          )}
+                                        </div>
+                                      )}
+
                                       <div className="col">
                                           <div className="input-group input-group-sm">
                                             <input

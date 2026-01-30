@@ -1206,8 +1206,9 @@ function App() {
                 {/* Logo */}
                 <div className="d-flex justify-content-center p-2">
                   <img
-                    src="/images/logo.png"
+                    src="/images/logo.jpg"
                     alt="Logo"
+                    style={{ maxWidth: '100px', height: 'auto' }}
                   />
                 </div>
                 {/* Botón 1. Generar Política */}
