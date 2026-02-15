@@ -19,6 +19,7 @@
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4"
   },
+  "proxy": "http://resilmesh-tap-ppcti-anonymizer:8070",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

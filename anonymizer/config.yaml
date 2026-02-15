@@ -11,10 +11,10 @@ context:
     database: Anonymizer
 services:
   arxlet:
-    url: http://arxlet:8080/api
+    url: http://resilmesh-tap-ppcti-arxlet:8080/api
   flaskdp:
-    url: http://flaskdp:8000
+    url: http://resilmesh-tap-ppcti-flaskdp:8000
   misp:
-    url: https://<YOUR_MISP_URL>
-    key: <YOUR_MISP_KEY>
-    ssl: false
+    url: https://ants-misp.inf.um.es/users/login
+    key: Azije0YdpPAFRBrv1wT3XuQCBf9DnqUXlWkCMGKi
+    ssl: true

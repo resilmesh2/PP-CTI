@@ -1066,7 +1066,6 @@ function App() {
       const headers = {
         "Transformer-Type": "misp.MispTransformer",
         "Content-Type": "application/json",
-        Authorization: auth.userData.access_token,
       };
 
       //enviar la solicitud usnado fetch
