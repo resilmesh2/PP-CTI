@@ -15,6 +15,6 @@ services:
   flaskdp:
     url: http://resilmesh-tap-ppcti-flaskdp:8000
   misp:
-    url: https://rmmonitor-pru-dck1.carm.es
+    url: http://resilmesh-tap-misp-core
     key: 8wmyg8sKMgqi1lnrvT5kYrbs6VMYKit7r9bHG0D8
     ssl: false
