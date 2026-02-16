@@ -88,6 +88,7 @@ class HierarchyAttribute(Model):
     attribute_name: str = Field(alias='attribute-name')
     attribute_type: str = Field(alias='attribute-type')
     attribute_generalization: list[AttributeGeneralization] = Field(
+        default=[],
         alias='attribute-generalization',
     )
 

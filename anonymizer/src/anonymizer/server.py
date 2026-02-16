@@ -19,8 +19,6 @@ def anonymizer() -> Sanic:
     bp_main = Blueprint.group(bg_debug, bg_anonymizer, url_prefix='/api')
 
     ALLOWED_ORIGINS = [
-        "http://localhost:3100", 
-        "http://localhost:3000",
         "http://resilmesh-tap-ppcti-frontend:3000",
         "http://resilmesh-tap-ppcti-frontend:3001"
     ]

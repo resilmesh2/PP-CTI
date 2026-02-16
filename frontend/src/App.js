@@ -1077,15 +1077,25 @@ function App() {
       });
 
       // Manejar la respuesta
-      const responseData = await response.json();
       console.log("Response Status:", response.status);
-      if (response.status == 200) {
+      if (response.ok) {
+        const responseData = await response.json();
         alert("Event sent and published in MISP instance");
         console.log("Event sent and published in MISP instance");
         console.log("Response Data:", responseData);
         return 200;
       } else {
-        console.error("Not allowed");
+        let errorMsg = `Request failed with status ${response.status}`;
+        try {
+          const errorData = await response.json();
+          if (errorData && errorData.error) {
+            errorMsg = errorData.error;
+          }
+        } catch (_) {
+          // Response body is not JSON or is empty
+        }
+        console.error("Error from anonymizer:", errorMsg);
+        alert(errorMsg);
         return -1;
       }
     } catch (error) {

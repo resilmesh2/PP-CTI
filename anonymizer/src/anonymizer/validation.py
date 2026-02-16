@@ -9,7 +9,7 @@ from traceback import format_exc
 from types import NoneType
 from collections.abc import Callable
 
-from sanic import HTTPResponse, Request, empty
+from sanic import HTTPResponse, Request, empty, json as sanic_json
 from sanic_ext import validate as sanic_validate
 from sanic_ext.exceptions import ValidationError
 
@@ -26,7 +26,7 @@ PARAM_JSON = 'json'
 
 def validation_fail(reason: str) -> HTTPResponse:
     log.error('Validation failed: %s', reason)
-    return empty(400)
+    return sanic_json({'error': reason}, status=400)
 
 
 def validate(*_args, from_transformer: bool = True, **_kwargs):  # noqa: ANN201
@@ -159,7 +159,10 @@ def validate(*_args, from_transformer: bool = True, **_kwargs):  # noqa: ANN201
                               'class')
                     log.error('Unable to validate request')
                     log.debug(format_exc())
-                    return empty(400)
+                    return sanic_json(
+                        {'error': f'Validation error: {e}'},
+                        status=400,
+                    )
                 raise e
         return decorated_function
     return decorator

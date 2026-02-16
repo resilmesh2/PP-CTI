@@ -31,7 +31,7 @@ class Attribute(Model):
 class Object(Model):
     name: str
     uuid: str | None = None
-    timestamp: str
+    timestamp: str = '0'
     attributes: list[Attribute] = Field(alias='Attribute')
 
 
