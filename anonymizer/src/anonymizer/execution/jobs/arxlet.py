@@ -83,7 +83,10 @@ class ARXletJob(AnonymizingJob):
 
                 # Extract the Anonymizer Attribute from the Anonymizer
                 # Object
-                tmp = self.extract_attributes(obj.value, attribute_name)
+                tmp = [a for a in obj.value
+                       if isinstance(a, data_model.Attribute)
+                       and a.type_is(self.TYPE_ANONYMIZABLE)
+                       and a.name == attribute_name]
                 # Transform it into an ARXlet AttributeData (for the
                 # hierarchy it will contain)
                 tmp2 = self.prepare_attributes(tmp, att_h)
@@ -412,9 +415,9 @@ class FromPets(ARXletJob):
             if ah is None:
                 msg = f'No hierarchy for attribute "{_att}"'
                 raise JobError(msg)
-            eatts = self.extract_attributes(data,
-                                         TYPE_ANONYMIZABLE_BY_ARXLET,
-                                         _att)
+            eatts = [a for a in data
+                     if isinstance(a, data_model.Attribute)
+                     and a.name == _att]
             atts = self.prepare_attributes(eatts, ah)
             log.debug('Job "%s": Prepared %s attributes of type %s',
                       self.name, len(atts), _att)
@@ -434,19 +437,19 @@ class FromPets(ARXletJob):
 
         # Apply PETs to objects
         for _obj in objects:
-            o_type = _obj['type']
+            o_name = _obj['type']
             o_vals = _obj['values']
             oh: policies.HierarchyObject | None = None
             for obj_h in obj_hierarchies:
                 tmp = self.parse_arg_as(obj_h, policies.HierarchyObject)
-                if tmp.misp_object_template == o_type:
+                if tmp.misp_object_template == o_name:
                     oh = tmp
             if oh is None:
-                msg = f'No hierarchy for object "{o_type}"'
+                msg = f'No hierarchy for object "{o_name}"'
                 raise JobError(msg)
-            eatts = self.extract_objects(data,
-                                      TYPE_ANONYMIZABLE_BY_ARXLET,
-                                      o_type)
+            eatts = [o for o in data
+                     if isinstance(o, data_model.Object)
+                     and o.name == o_name]
 
             # Prune all non-sensitive attributes from the Object.  To
             # do this we create a new list with new Objects, but the
@@ -460,7 +463,7 @@ class FromPets(ARXletJob):
 
             objs = self.prepare_objects(l_pruned, oh, *o_vals)
             log.debug('Job "%s": Prepared %s objects of type %s',
-                      self.name, len(objs), o_type)
+                      self.name, len(objs), o_name)
             if len(objs) == 0:
                 continue
             try:
@@ -888,18 +891,18 @@ class KMap(FromPets):
         url = kwargs.get(self.PARAM_URLA,
                          config.services.arxlet.url.unicode_string())
 
-        o_type = objectt['type']
+        o_name = objectt['type']
         o_vals = objectt['values']
 
         # Extract context
         context_client: ContextClient = self.request().app.ctx.context_client
-        results = await context_client.lookup([o_type])
+        results = await context_client.lookup([o_name])
         context = []
         count = 0
         for req in results:
-            objs = self.extract_objects(req.data,
-                                        TYPE_ANONYMIZABLE_BY_ARXLET,
-                                        o_type)
+            objs = [o for o in req.data
+                    if isinstance(o, data_model.Object)
+                    and o.name == o_name]
             listt = self.prepare_objects(objs, hierarchy, *o_vals)
             context.append(listt)
             count = count + len(listt)

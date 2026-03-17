@@ -111,36 +111,6 @@ class Job(ReadsFromPolicies, ABC):
             msg = f'Environment attribute not found: {attribute}'
             raise JobError(msg) from e
 
-    def extract_attributes(self,
-                           data: Iterable,
-                           *attribute_type: str,
-                           ) -> list[data_model.Attribute]:
-        """Obtain Anonymizer Attributes from an iterable container.
-
-        :param attribute_type: A list of types that extracted
-        Attributes have to possess.
-        """
-        ret = []
-        for component in data:
-            if (isinstance(component, data_model.Attribute)
-                and all(component.type_is(t) for t in attribute_type)):
-                ret.append(component)
-        return ret
-
-    def extract_objects(self,
-                        data: Iterable,
-                        *object_type: str) -> list[data_model.Object]:
-        """Obtain Anonymizer Objects from an iterable container.
-
-        :param object_type: A list of types that extracted
-        Objects have to possess.
-        """
-        ret = []
-        for component in data:
-            if (isinstance(component, data_model.Object)
-                and all(component.type_is(t) for t in object_type)):
-                ret.append(component)
-        return ret
 
     def verify_parameters(self, args: dict, *params: str):
         log.debug('Job "%s": Verifying that %s parameters are present',

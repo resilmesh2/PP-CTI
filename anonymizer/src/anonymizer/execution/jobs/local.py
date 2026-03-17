@@ -82,13 +82,18 @@ class ApplyAnonymizationLevel(LocalJob):
         # Set lookup collection
         lookup: list[Attribute] = []
         if len(objects) == 0:
-            lookup.extend([a for a in data if isinstance(a, Attribute)])
+            lookup.extend([a for a in data
+                           if isinstance(a, Attribute)
+                           and a.type_is(self.TYPE_ANONYMIZABLE)])
         else:
             for c in data:
                 if (isinstance(c, Object)
-                    and any(c.type_is(t) for t in objects)):
+                    and c.type_is(self.TYPE_ANONYMIZABLE)
+                    and c.name in objects):
                     lookup.extend(
-                        [a for a in c.value if isinstance(a, Attribute)],
+                        [a for a in c.value
+                         if isinstance(a, Attribute)
+                         and a.type_is(self.TYPE_ANONYMIZABLE)],
                     )
 
         log.debug('Job "%s": Lookup list generated with length %s',
@@ -105,7 +110,7 @@ class ApplyAnonymizationLevel(LocalJob):
         for attribute in lookup:
             name = None
             for n in attributes:
-                if attribute.type_is(n):
+                if attribute.name == n:
                     name = n
                     break
             if name is None:
