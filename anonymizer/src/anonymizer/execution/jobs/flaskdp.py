@@ -107,15 +107,17 @@ class FlaskDPJob(AnonymizingJob):
             # Extract Objects Objects must be anonymizable and be from
             # a specific set of types.
             count = 0
-            for _obj in self.extract_objects(data,
-                                             TYPE_ANONYMIZABLE_BY_FLASKDP,
-                                             *objects):
+            objs = [o for o in data
+                    if isinstance(o, data_model.Object)
+                    and o.name in objects]
+            for _obj in objs:
                 # Extract Attributes from _obj.  The Attribute must be
                 # anonymizable and (if specified), be of a specific
                 # type
-                tmp = self.extract_attributes(_obj.value,
-                                              TYPE_ANONYMIZABLE_BY_FLASKDP,
-                                              *attributes)
+                tmp = [a for a in _obj.value
+                       if isinstance(a, data_model.Attribute)
+                       and a.type_is(self.TYPE_ANONYMIZABLE)
+                       and a.name in attributes]
                 # Prepare FlaskDP request item
                 item_id = f'obj{_obj.name}-{count}'
                 item = self.prepare_values(item_id, tmp)
@@ -137,9 +139,9 @@ class FlaskDPJob(AnonymizingJob):
             for _att in attributes:
                 # Extract Attributes.  Attributes must be anonymizable
                 # and be of a specific type
-                tmp = self.extract_attributes(data,
-                                              TYPE_ANONYMIZABLE_BY_FLASKDP,
-                                              *attributes)
+                tmp = [a for a in data
+                       if isinstance(a, data_model.Attribute)
+                       and a.name in attributes]
                 # Prepare FlaskDP request item
                 item_id = _att
                 item = self.prepare_values(item_id, tmp)
