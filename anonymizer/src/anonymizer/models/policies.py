@@ -128,11 +128,12 @@ def get_hierarchy_values(value: str,
             # bisection
             bisect_list = []
             for interval in intervals:
-                i = interval.strip('<=>')
+                i = interval.strip('<=> ')
                 if '-' in i:
                     i = i.split('-')[1]
-                bisect_list.append(i)
-            ret.append(intervals[bisect.bisect_left(bisect_list[:-1], value)])
+                bisect_list.append(float(i))
+            idx = intervals[bisect.bisect_left(bisect_list[:-1], float(value))]
+            ret.append(idx)
     elif hierarchy.attribute_type == 'regex':
         ret.append(value)
         # By the privacy policy standards, there will be a single
